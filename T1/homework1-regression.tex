@@ -1,13 +1,11 @@
 \documentclass[submit]{harvardml}
 
 % Put in your full name and email address.
-\name{Your Name}
-\email{email@fas.harvard.edu}
+\name{David Hughes}
+\email{davidralphhughes@college}
 
 % List any people you worked with.
 \collaborators{%
-  John Doe,
-  Fred Doe
 }
 
 % You don't need to change these.
@@ -37,7 +35,7 @@
   framerule=0pt,
   basicstyle=\ttfamily,
   columns=fullflexible}}{}
- 
+
 
 \begin{document}
 \begin{center}
@@ -48,10 +46,10 @@
 
 \subsection*{Introduction}
 This homework is on different forms of linear regression and focuses
-on loss functions, optimizers, and regularization. Linear regression 
+on loss functions, optimizers, and regularization. Linear regression
 will be one of the few models that we see that has an analytical solution.
-These problems focus on deriving these solutions and exploring their 
-properties. 
+These problems focus on deriving these solutions and exploring their
+properties.
 
 If you find that you are having trouble with the first couple
 problems, we recommend going over the fundamentals of linear algebra
@@ -64,7 +62,7 @@ the underlying mathematics remains the same :).
 Please type your solutions after the corresponding problems using this \LaTeX\ template, and start each problem on a new page. You will submit your solution PDF and at most 1 \texttt{.py} file per problem
 (for those that involve a programming component) to Canvas.\\
 
-\pagebreak 
+\pagebreak
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 1
@@ -81,7 +79,7 @@ p(\boldy \given \boldX, \boldw) &= \prod_{i=1}^n \mcN(y_i \given \boldw^\trans \
 where $\tau_n$ is another fixed scalar defining the variance. \\
 
 \begin{itemize}
-\item[(a)] Using the fact that the posterior is the product of the prior and the likelihood (up to a normalization constant), i.e., 
+\item[(a)] Using the fact that the posterior is the product of the prior and the likelihood (up to a normalization constant), i.e.,
 \[\arg\max_{\boldw} \ln p(\boldw \given \boldy, \boldX)= \arg\max_{\boldw} \ln p(\boldw) + \ln p(\boldy \given \boldX, \boldw).\]
 
 \noindent Show that maximizing the log posterior is equivalent to minimizing a regularized loss function given by ${\mcL(\boldw) + \lambda \mcR(\boldw)}$, where
@@ -90,7 +88,7 @@ where $\tau_n$ is another fixed scalar defining the variance. \\
 \mcR(\boldw) &= \frac{1}{2}\boldw^\trans \boldw
 \end{align*} \\
 
-Do this by writing $\ln p(\boldw \given \boldy, \boldX)$ as a function of $\mcL(\boldw)$ and $\mcR(\boldw)$, dropping constant terms if necessary.  Conclude that maximizing this posterior is equivalent to minimizing the regularized error term given by $\mcL(\boldw) + \lambda \mcR(\boldw)$ for a $\lambda$ expressed in terms of the problem's constants.  
+Do this by writing $\ln p(\boldw \given \boldy, \boldX)$ as a function of $\mcL(\boldw)$ and $\mcR(\boldw)$, dropping constant terms if necessary.  Conclude that maximizing this posterior is equivalent to minimizing the regularized error term given by $\mcL(\boldw) + \lambda \mcR(\boldw)$ for a $\lambda$ expressed in terms of the problem's constants.
 
 \item[(b)] Notice that the form of the posterior is the same as the
   form of the ridge regression loss
@@ -116,7 +114,7 @@ $.
 \item[(d)] What might happen if the number of weights in $\boldw$ is
   greater than the number of data points $N$?  How does the
   regularization help ensure that the inverse in the solution above
-  can be computed?  
+  can be computed?
 
 \end{itemize}
 
@@ -124,8 +122,38 @@ $.
 
 
 \subsubsection*{Solution}
+\begin{itemize}
+\item[(a)]
+    $$p(w) = det(2\pi\tau_n^{-1}\mathbf{I})^{-\frac{1}{2}}e^{-\frac{1}{2}w^{\trans}\tau_w\mathbf{I}w}$$
+    $$ln(p(w)) = constant - \frac{1}{2}w^{\trans}\tau_w\mathbf{I}w$$
+    $$ln(p(w)) = constant - \tau_w\frac{1}{2}w^{\trans}w$$
+    $$ln(p(w)) = constant - \tau_w\mcR(w)$$
+    \\
+    $$p(y|X,w) = \prod_{i=1}^{n}\frac{1}{\sqrt{2\pi\tau_n^{-1}}}e^{-\frac{(y_i-w{\trans}x_i)^2}{2\tau_n^{-1}}}$$
+    $$ln(p(y|X,w)) = \sum_{i=1}^{n}constant - \frac{(y_i-w^{\trans}x_i)^2}{2\tau_n^{-1}}$$
+    $$ln(p(y|X,w)) = constant - \frac{1}{2}\sum_{i=1}^n\frac{(y_i-w^{\trans}x_i)^2}{\tau_n^{-1}}$$
+    $$ln(p(y|X,w)) = constant - \tau_n\frac{1}{2}\sum_{i=1}^n(y_i-w^{\trans}x_i)^2$$
+    $$ln(p(y|X,w)) = constant - \tau_n\mcL(w)$$
 
+\item[(b)]
+    $$\mcL(w) = (y-Xw)^{\trans}(y-X_w) + \lambda w^{\trans}w$$
+    $$\mcL(w) = (y^{\trans}-w^{\trans}X^{\trans})(y-Xw) + \lambda w^{\trans}w$$
+    $$\mcL(w) = y^{\trans}y - y^{\trans}Xw - w^{\trans}X^{\trans}y + w^{\trans}X^{\trans}Xw + \lambda w^{\trans}w$$
+    $$\frac{\partial \mcL}{\partial w} = -2X^{\trans}y + wX^{\trans}w + 2 \lambda w$$
 
+\item[(c)]
+    $$0 = 2X^{\trans}Xy + 2\lambda w - 2X^{\trans}y$$
+    $$0 = 2(X^{\trans}Xw + \lambda w - X^{\trans}y)$$
+    $$0 = (X^{\trans}X + \lambda \mathbf{I})w - X^{\trans}y$$
+    $$(X^{\trans}X + \lambda \mathbf{I})w = X^{\trans}y$$
+    $$w = (X^{\trans}X + \lambda \mathbf{I})^{-1}X^{\trans}y$$
+
+\item[(d)]
+    If the number of weights $w$ is greater than the number of data points $N$,
+    there is a possibility the matrix $X^{\trans}X$ won't be invertible. The
+    regularization, which adds a $\lambda\mathbf{I}$, ensures that the matrix
+    inside the inverse is positive definite, and therefore invertible.
+\end{itemize}
 
 
 
@@ -151,7 +179,7 @@ Year,Sunspot_Count,Republican_Count
 1970,104.5,44
 \end{csv}
 and you can see plots of the data in Figures~\ref{fig:congress}
-and~\ref{fig:sunspots}. 
+and~\ref{fig:sunspots}.
 
 \begin{figure}[h]
 \centering
@@ -169,7 +197,7 @@ and~\ref{fig:sunspots}.
 
 Data Source: \url{http://www.realclimate.org/data/senators_sunspots.txt}
 
-\begin{problem}[Modeling Changes in Republicans and Sunspots, 15pts] 
+\begin{problem}[Modeling Changes in Republicans and Sunspots, 15pts]
 
 Implement basis function regression with ordinary least squares for
 years vs. number of Republicans in the Senate. Some sample Python code
@@ -177,7 +205,7 @@ is provided in \verb|linreg.py|, which implements linear regression.
 Plot the data and regression lines for the simple linear case, and for
 each of the following sets of basis functions (only use (b) for years, skip for sunspots):
 \begin{itemize}
-	\item[(a)] $\phi_j(x) = x^j$ for $j=1, \ldots, 5$ 
+	\item[(a)] $\phi_j(x) = x^j$ for $j=1, \ldots, 5$
     \item[(b)] $\phi_j(x) = \exp{\frac{-(x-\mu_j)^2}{25}}$ for $\mu_j=1960, 1965, 1970, 1975, \ldots 2010$
 	\item[(c)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 5$
 	\item[(d)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 25$
@@ -186,7 +214,7 @@ In addition to the plots, provide one or two sentences for each with
 numerical support, explaining whether you think it is fitting well,
 overfitting or underfitting.  If it does not fit well, provide a
 sentence explaining why. A good fit should capture the most important
-trends in the data.\\ 
+trends in the data.\\
 
 \noindent Next, do the same for the number of sunspots vs. number of
 Republicans, using data only from before 1985.  What bases provide the
@@ -198,6 +226,48 @@ number of sunspots controls the number of Republicans in the senate?
 
 
 \subsubsection*{Solution}
+
+\begin{itemize}
+\item[(a)]
+    \includegraphics[width=6cm]{part_a_years.png} \\
+    This regression underfits, with a relatively high loss of 424.87.
+    Additionally, the simple curve doesn't match the sinusoidal behavior of the
+    points.
+\item[(b)]
+    \includegraphics[width=6cm]{part_b_years.png} \\
+    This regression fits pretty well, and improves on the loss with 54.27. The
+    curve seems to match the points relatively well, especially at the
+    beginning.
+\item[(c)]
+    \includegraphics[width=6cm]{part_c_years.png} \\
+    This regression underfits, with an extraordinarily high loss of 1082.81.
+    The curve tries to follow the sinusoidal pattern, but definitely fails
+    overall the follow the path of the points.
+\item[(d)]
+    \includegraphics[width=6cm]{part_d_years.png} \\
+    This regression fits well (the best of the parts), with the lowest loss at
+    39.85. For most of the points, the curve is quite similar to part b, but
+    towards the end the sinusoidal regression ultimately does a better job than
+    in part b.
+
+\item[(a)]
+    \includegraphics[width=6cm]{part_a_sunspots.png} \\
+    This regression underfits, with a pretty high loss of 351.23. The curve
+    attempts to follow the graph, but it's clear from the graph that the points
+    aren't really being hit, and at the end the peak of the curve doesn't
+    really match any of the data.
+\item[(c)]
+    \includegraphics[width=6cm]{part_c_sunspots.png} \\
+    This regression underfits, with a loss of 375.11, the loss is actually
+    worse than in part a. Despite the widely changing curve, many of the points
+    do not fall on the graph, and are also not particularly close.
+\item[(d)]
+    \includegraphics[width=6cm]{part_d_sunspots.png} \\
+    This regression overfits, with an extremely low loss of 2.47. The curve
+    touches all of the data points, but completely blows out the scale of the
+    graph where it's misleading and makes it look like the points are even
+    linear.
+\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -220,34 +290,34 @@ for model selection. Define the $\chi^2$ (\textit{chi-squared}) error term for e
 
 $$\chi^2 =  \frac{1}{\sigma} \sum_{i=1}^N \left( y_i - \sum_{j=0}^K a_j x_i^j \right)^2 $$
 
-\noindent Using this notation, a formulation of the BIC can be written as: 
+\noindent Using this notation, a formulation of the BIC can be written as:
 
 $$-\ln P({x_i,y_i} | \text{model class} ) \approx \frac{N}{2} \ln (2\pi \sigma^2) - \sum_{i=1}^N \ln p(x_i) + \frac{1}{2} \chi^2_{min} + \frac{K+1}{2} \ln N $$ \\
 
-\noindent where $\chi^2_{min}(K)$ denote the minimum value of the $\chi^2$ over the set of polynomial models with $K$ parameters. 
+\noindent where $\chi^2_{min}(K)$ denote the minimum value of the $\chi^2$ over the set of polynomial models with $K$ parameters.
 Finally, assume that $x_i \sim Unif(-5,5)$ and that each $a_j \sim Unif(-1,1)$. Let $K_{true} = 10$.
 
     \begin{itemize}
-    
+
         \item[(a)] Write code that generates $N$ data points in the following way:
             \begin{enumerate}
-                \item Generate a polynomial $f(x) = \sum_{j = 0}^{K_{true}} a_j x^j$ 
+                \item Generate a polynomial $f(x) = \sum_{j = 0}^{K_{true}} a_j x^j$
                 \item Sample $N$ points $x_i$
                 \item Compute $y_i = f(x_i) + \epsilon_i$ where $\epsilon$ is sampled from $\mathcal{N}(0, \sigma^2)$ with $\sigma = \frac{ \max_i f(x_i) - \min_i f(x_i) }{10}$.
             \end{enumerate}
-        
+
         \item[(b)] For a set of $y_i$ generated above and a given $K$, write a function that minimizes $\chi^2$ for a polynomial of degree $K$ by solving for $\mathbf{a}$ using
-                   numpy \texttt{polyfit}.                   Check for $N=20$ that $\chi^2_{min}(K)$ is a decreasing function of $K$. 
-        
-        \item[(c)] For $N=20$ samples, run $500$ trials. This involves generating a new polynomial for each trial, then from that polynomial, 20 sample data points $\{(x_i,y_i)\}$. For each trial, 
+                   numpy \texttt{polyfit}.                   Check for $N=20$ that $\chi^2_{min}(K)$ is a decreasing function of $K$.
+
+        \item[(c)] For $N=20$ samples, run $500$ trials. This involves generating a new polynomial for each trial, then from that polynomial, 20 sample data points $\{(x_i,y_i)\}$. For each trial,
                           we can calculate the optimal $K$ by minimizing BIC. Compute the mean and variance of the optimal $K$ over 500 trials.
-        
-        \item[(d)] For $N$ ranging from $3$ to $3 \cdot 10^4$ on a log scale (you can use the function $3*np.logspace(0,4, 40)$ as your values of $N$), 
-                   compute the mean and variance of the optimal $K$ over 500 trials for each $N$. Plot your results, where the x-axis is the number of samples ($N$) on a log-scale, 
-                   and the y-axis is the mean value of the optimal $K$ with error bars indicating the variance over 500 trials. Verify that minimizing the BIC controls the complexity of the fit, 
-                   selecting a nontrivial optimal $K$. You should observe that the optimal K is smaller than $K_{true}$ for small data sets, and approaches $K_{true}$ as you 
+
+        \item[(d)] For $N$ ranging from $3$ to $3 \cdot 10^4$ on a log scale (you can use the function $3*np.logspace(0,4, 40)$ as your values of $N$),
+                   compute the mean and variance of the optimal $K$ over 500 trials for each $N$. Plot your results, where the x-axis is the number of samples ($N$) on a log-scale,
+                   and the y-axis is the mean value of the optimal $K$ with error bars indicating the variance over 500 trials. Verify that minimizing the BIC controls the complexity of the fit,
+                   selecting a nontrivial optimal $K$. You should observe that the optimal K is smaller than $K_{true}$ for small data sets, and approaches $K_{true}$ as you
                    analyze larger data sets.
-        
+
     \end{itemize}
 
 
@@ -255,7 +325,12 @@ Finally, assume that $x_i \sim Unif(-5,5)$ and that each $a_j \sim Unif(-1,1)$. 
 
 \subsubsection*{Solution}
 
-
+\begin{itemize}
+\item[(b)]
+    \includegraphics[width=10cm]{p3_part_b.png}
+\item[(d)]
+    \includegraphics[width=10cm]{p3_part_d.png}
+\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -265,6 +340,6 @@ Finally, assume that $x_i \sim Unif(-5,5)$ and that each $a_j \sim Unif(-1,1)$. 
 \begin{problem}[Calibration, 1pt]
 Approximately how long did this homework take you to complete?
 \end{problem}
-\textbf{Answer:}
+\textbf{Answer: 7h}
 
 \end{document}

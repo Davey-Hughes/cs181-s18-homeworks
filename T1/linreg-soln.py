@@ -65,7 +65,7 @@ def exp_kernel(x,mu):
 def make_basis(xx,part='a'):
 
     X = [np.ones(xx.shape).T]
-    
+
     if part=='a':
         for j in range(1, 6):
             X.append(xx**j)
@@ -96,7 +96,7 @@ grid_years = np.linspace(1960, 2005, 200)
 
 for part in ['a','b','c','d']:
 
-    X = make_basis(years,part)   
+    X = make_basis(years,part)
     w = find_weights(X,Y)
 
     grid_X = make_basis(grid_years,part)
@@ -114,7 +114,7 @@ Y = republican_counts[years<last_year]
 
 for part in ['a','c','d']:
 
-    X = make_basis(sunspot_counts[years<last_year],part)   
+    X = make_basis(sunspot_counts[years<last_year],part)
     w = find_weights(X,Y)
 
     grid_X = make_basis(grid_sunspots,part)

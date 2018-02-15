@@ -17,7 +17,7 @@ def generate_data_points(K,n):
     # and x_i, points to be sampled
     a_mu = np.random.uniform(-1,1,K+1)
     x_i = np.random.uniform(-5,5,n)
-    # Define the polynomial based on the randomly selected parameters. 
+    # Define the polynomial based on the randomly selected parameters.
     f = lambda x: np.array([a_mu[i]*x**i for i in range(K+1)]).sum(0)
     # Calculate the range of f over the sampled x_i, and set the noise variance
     sigma = ((f(x_i).max()-f(x_i).min())/10.)
@@ -65,7 +65,7 @@ def optimal_k_trials(n,K,trials):
     optimal_k = np.zeros(trials)
     for i in range(trials):
         x_i,y_i,sigma = generate_data_points(K,n)
-        #we need a range of potential k to explore. Here we set it at (2,30] 
+        #we need a range of potential k to explore. Here we set it at (2,30]
         chi2_k = np.array([get_chi2_min(x_i,y_i,k,sigma) for k in range(2,30)])
         BIC = np.array([0.5*n*np.log(2.*np.pi*sigma) - n*np.log(1./10.) + 0.5*(chi2_k[k-2] + (k+1)*np.log(n)) for k in range(2,30)])
         optimal_k[i] = np.argmin(BIC) + 2
@@ -97,6 +97,3 @@ plt.errorbar(n_s, kopt_mean, yerr=kopt_std)
 plt.xlabel('Number of sample data points (log)')
 plt.ylabel('Optimal K (Mean and Std. Deviation)')
 plt.show()
-
-
-
