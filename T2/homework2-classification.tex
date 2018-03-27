@@ -43,7 +43,7 @@
 }
 \subsection*{Introduction}
 
-This homework is about Bayesian methods 
+This homework is about Bayesian methods
 and  multiclass classification. In lecture we have
 primarily focused on binary classifiers trained to discriminate
 between two classes. In multiclass classification, we discriminate
@@ -51,7 +51,7 @@ between three or more classes. We encourage you to first read the
 Bishop textbook coverage of these topic, particularly: Section 4.2
 (Probabilistic Generative Models), Section 4.3 (Probabilistic
 Discriminative Models).
-%, and, if MLE is troublesome, review 
+%, and, if MLE is troublesome, review
 %the materal Section 1
 %and lecture 3.
 
@@ -64,12 +64,12 @@ integer~${1,2,\ldots,c}$, we represent $\boldy$ as a binary vector of
 length~$c$. These vectors are zero in each
 component except for the one corresponding to the correct label, and
 that entry has a one.  So, if there are 7 classes and a particular
-datum has label 3, then the target vector would be~${C_3 = [0,0,1,0,0,0,0]}$. 
+datum has label 3, then the target vector would be~${C_3 = [0,0,1,0,0,0,0]}$.
 If there are $c$ classes, the set of possible outputs is $\{C_1 \ldots C_c \} = \{C_k\}_{k=1}^c$.
 Throughout the assignment we will assume
 that output $\boldy \in \{C_k\}_{k=1}^c$.\\
 
-The problem set has three problems: 
+The problem set has three problems:
 \begin{itemize}
 \item In the first problem, you will explore the properties of Bayesian
 estimation methods for the Bernoulli model as well as the special
@@ -77,11 +77,11 @@ case of Bayesian linear regression with a simple prior.
 %
 \item  In the second
 problem, you will dive into  matrix algebra and the methods behind
-generative multiclass classifications. You will extend the discrete classifiers  
+generative multiclass classifications. You will extend the discrete classifiers
 that we see in  lecture to a Gaussian model.
 %
-\item Finally, in the third problem, you will implement 
- logistic regression as well as a generative classifier 
+\item Finally, in the third problem, you will implement
+ logistic regression as well as a generative classifier
 from close to scratch.
 %
 \end{itemize}
@@ -94,15 +94,15 @@ from close to scratch.
   (MAP) and posterior predictive estimator, first in the
   Beta-Bernoulli model and then in the linear regression setting.\\
 
-First consider the Beta-Bernoulli model (and see lecture 5.) 
+First consider the Beta-Bernoulli model (and see lecture 5.)
 %
 \begin{enumerate}
 \item[1.] Write down the expressions for the MLE, MAP and posterior predictive
 distributions, and for
 a prior $\theta\sim Beta(4,2)$ on the
 parameter of the Bernoulli,
-and  with data $D= 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1,$ 
-$1, 0, 1, 0$, plot 
+and  with data $D= 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1,$
+$1, 0, 1, 0$, plot
 the three different
 estimates after each additional
 sample.
@@ -119,14 +119,14 @@ estimators.
 
 Second, consider the Bayesian Linear Regression model, with
 data $D=\{(\boldx_i,y_i)\}_{i=1}^n$, $\boldx_i\in\mathbb{R}^m$,
- $y_i\in\mathbb{R}$, and generative model 
+ $y_i\in\mathbb{R}$, and generative model
 %
 $$
 y_i\sim\mcN(\boldw^\top\boldx_i,\beta^{-1})
 $$
 for (known) precision $\beta$ (which is just the reciprocal
 of the variance). Given this, the likelihood of the
-data is $p(\boldy|\boldX,\boldw) = \mcN(\boldy|\boldX\boldw,\beta^{-1}\mathbf{I})$. Consider the special case of 
+data is $p(\boldy|\boldX,\boldw) = \mcN(\boldy|\boldX\boldw,\beta^{-1}\mathbf{I})$. Consider the special case of
 an isotropic (spherical) prior on weights, with
 %
 $$
@@ -150,6 +150,48 @@ where
 \end{enumerate}
 \end{problem}
 
+\subsection{solution}
+\begin{enumerate}
+    \item[1.]
+        $$w_{MLE} = argmax_w p(D|\mathbf{w})$$
+        $$w_{MAP} = argmax_w p(\mathbf{w}|D) = argmax_w p(D|\mathbf{w})p(w)$$
+        $$p(y|D,\mathbf{x}) = \int_{w} p(y|\mathbf{w},\mathbf{x})
+        p(\mathbf{w}|D)d\mathbf{w}$$
+        \includegraphics[scale=.7]{prob1_1.png}
+
+    \item[2.]
+        \includegraphics[scale=.7]{prob1_2.png}
+    \item[3.]
+        The MAP and posterior predictive follow the exact same points because
+        the posterior mean is equal to the posterior mode, effectively making
+        the -1 and the -2 in the numerator and denominator respectively. The
+        MLE generally follows the same convergence path towards the 0.5 that is
+        expected from the Bernoulli distribution, however at the beginning with
+        two 0s, it's clear that MLE, without the beta prior is far off, and has
+        also not converged to 0.5 by 16 points like both MAP and posterior predictive
+        have.
+    \newpage
+    \item[4.]
+        $$\log p(w,y) \propto \log p(y|w)p(w)$$
+        $$= \log[(\det 2\pi
+        \beta^{-1}I)^{-0.5}\exp(-1/2(y-Xw)^{\trans}\beta^{-1}I(y-Xw)\cdot(\det 2\pi
+        \alpha^{-1}I)^{-0.5}\exp(-1/2w^{\trans}\alpha^{-1}Iw)]$$
+        $$\propto -(\beta/2)(y-Xw)^{\trans}(y-Xw)-(\alpha/2)w^{\trans}w$$
+        $$=
+        -(\alpha/2)w^{\trans}w-(\beta/2)y^{\trans}y-(\beta/2)(Xw)^{\trans}(Xw)+\beta
+        y^{\trans}Xw$$
+        $$= -1/2 \begin{pmatrix}w \\ y
+            \end{pmatrix}^{\trans}\begin{pmatrix}\alpha I + \beta X^{\trans}X &
+            -X^{\trans} \\ -\beta X & \beta\end{pmatrix}\begin{pmatrix} w \\ y
+        \end{pmatrix}$$
+
+        Using Gaussian conjugacy to find the conditional Gaussian from the
+        joint (Murphy equation 4.69):
+        $$\Sigma_{w|y} = \Lambda_{w,w}^{-1} = (\alpha I + \beta X^{\trans})^{-1}$$
+        $$\mu_{w|y} = \Sigma_{w|y}(\Sigma_{w}^{-1}\mu +
+        X^{\trans}\Sigma_y^{-1}y) = \beta \Sigma_{x|y}X^{\trans}y$$
+}\end{enumerate}
+
 %\subsection*{2. Mooooar matrix calculus [10 pts]}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2
@@ -160,12 +202,12 @@ where
   $p(\boldy = C_k; \bpi) = \pi_k$ for all $k \in \{1, \ldots, c\}$
 (where $\pi_k$ is a parameter of the prior).
 %
-%that define the prior. 
+%that define the prior.
 Let  $p(\boldx|\boldy=C_k)$ denote
 the class-conditional density of features $\boldx$ (in this
 case for class $C_k$). Consider the data set $D = \{(\boldx_i,
 \boldy_i)\}_{i=1}^n$ where as above $\boldy_i \in \{C_k\}_{k=1}^c$ is
-encoded as a one-hot target vector. 
+encoded as a one-hot target vector.
 %
 \begin{enumerate}
   \item Write out the negated log-likelihood of the data set,
@@ -182,8 +224,8 @@ Lagrange multipliers below, give the
     result should be very intuitive!
 \end{enumerate}
 
-    For the remaining questions, let the 
-    class-conditional probabilities be Gaussian distributions with 
+    For the remaining questions, let the
+    class-conditional probabilities be Gaussian distributions with
 the same covariance matrix
     $$p(\boldx | \boldy = C_k) = \mathcal{N}(\boldx |  \bmu_k, \bSigma), \text{\ for\ }k \in \{1,\ldots, c\}$$
 %
@@ -197,7 +239,7 @@ and different means $\bmu_k$ for each class.
     again, your final answer should seem intuitive.
   \item[5.] Derive the gradient for the negative log-likelihood with respect to the
     covariance matrix $\bSigma$ (i.e., looking
-to find an MLE for the covariance). 
+to find an MLE for the covariance).
 Since you are differentiating with respect to a
     \emph{matrix}, the resulting expression should be a matrix!
 %
@@ -206,14 +248,14 @@ Since you are differentiating with respect to a
 
 \paragraph{Hint: Lagrange Multipliers.} Lagrange Multipliers are a method for
 optimizing a function $f$ with respect to an
-equality constraint, i.e. 
+equality constraint, i.e.
 \[\min_{\boldx} f(\boldx)\ \text{s.t.}\ g(\boldx) = 0.\]
 
 This can be turned into an unconstrained problem by introducing a
 Lagrange multiplier $\lambda$ and constructing the Lagrangian function,
 \[L(\boldx, \lambda) =  f(\boldx) + \lambda g(\boldx).\]
 
-It can be shown that it is a necessary condition that the optimum 
+It can be shown that it is a necessary condition that the optimum
 is a critical point of this new function. We can find this point by solving two equations:
 
 \[\frac{\partial L(\boldx, \lambda)}{\partial  \boldx} = 0  \ \ \text{and}\  \  \frac{\partial L(\boldx, \lambda)}{\partial \lambda} = 0 \]
@@ -233,6 +275,69 @@ $\boldX^{-\top} := (\boldX^{\top})^{-1}$
  \end{problem}
 
 
+\subsection{Solution}
+
+\begin{enumerate}
+\item[1.]
+    $$-\ln p(D|\pi) = -\sum_{i=1}^n \sum_{k=1}^c y_{i,k}\big[\ln p(x_i|y_i=C_k) +
+    \ln \pi_k \big]$$
+
+\item[2.]
+    Adding the Lagrangian and differentiating:
+    $$\frac{\partial L}{\partial \pi} = \frac{\partial}{\partial
+    \pi}\Bigg[-\sum_{i=1}^n \sum_{k=1}^c y_{i,k}\big[\ln p(x_i|y_i=C_k) + \ln
+    \pi_k \big] + \lambda \sum_{k}(\pi_k - 1)\Bigg]$$
+    $$0 = 1/(\pi_k)\sum_{i=1}^{n} y_{i,k} + \lambda$$
+    $$\pi_k = (1/\lambda) \sum_{i=1}^{n} y_{i,k}$$
+    Since we differentiated with respect to $\lambda$:
+    $$\sum_k \pi_k - 1 = 0$$
+    $$\sum_k - (1/\lambda) \sum_{i=1}^{n} y_{i,k} - 1 = 0$$
+    $$\lambda = -N$$
+    Thus:
+    $$\pi_k = -(1/\lambda) \sum_{i=1}^{n} y_{i,k} = (1/N) \sum_{i=1}^{n}
+    y_{i,k} $$
+
+\item[3.]
+    Using the normal PDF, our log-likelihood equation, calculating the
+    gradient, and using line 81 of the Matrix cookbook:
+    $$-\ln p(D|\pi) = -\sum_{i=1}^{n}\sum_{k=1}^{c}y_{i,k}\big[\ln p(x_i|y_i =
+    C_k) + \ln \pi_k \big] $$
+    $$= -\sum_{i=1}^{n}\sum_{k=1}^{c}y_{i,k}\Bigg[\ln \big[(2\pi
+    \det(\Sigma))^{-1/2}\exp(-(1/2)(x-\mu)^{\trans}\Sigma^{-1}(x-\mu)) \big] +
+    \ln \pi_k \Bigg] $$
+    $$= -\sum_{i=1}^{n}\sum_{k=1}^{c}y_{i,k}\big[-(1/2)\ln(2\pi) -
+    (1/2)\ln(\det(\Sigma))-(1/2)(x-\mu)^{\trans}\Sigma^{-1} + \ln \pi_k \big]
+    $$
+    $$\frac{-\partial}{\partial \mu} \ln p(D|\pi) = (1/2)\sum_{i=1}^{n}
+    \sum_{k=1}^{c} y_{i,k}\frac{\partial}{\partial \mu}
+    \big[(x-\mu)^{\trans}\Sigma^{-1}(x-\mu) \big] $$
+    $$= (1/2)\sum_{i=1}^{n}
+    \sum_{k=1}^{c} y_{i,k}\frac{\partial}{\partial \mu}
+    \big[-x^{\trans}\Sigma^{-1}\mu-\mu^{\trans}\Sigma^{-1}x +
+    \mu^{\trans}\Sigma^{-1}\mu \big] $$
+    $$= (1/2)\sum_{i=1}^{n}
+    \sum_{k=1}^{c} y_{i,k}
+    \big[-2x^{\trans}\Sigma^{-1} + (\Sigma^{-1} + \Sigma^{-\trans})\mu \big] $$
+
+\item[4.]
+    Setting the gradient to zero and solving for $\mu$:
+    $$0 = (1/2)\sum_{i=1}^{n}
+    \sum_{k=1}^{c} y_{i,k}
+    \big[-2x^{\trans}\Sigma^{-1} + (\Sigma^{-1} + \Sigma^{-\trans})\mu \big] $$
+    $$\mu = \frac{4 \sum_{i=1}^{n} \sum_{k=1}^{c} y_{i,k}x^{\trans}\Sigma^{-1}}
+    {\sum_{i=1}^{n} \sum_{k=1}^{c} y_{i,k}(\Sigma^{-1} + \Sigma^{-\trans})\mu} $$
+
+\item[5.]
+    We can use equation 61 from the Matrix Cookbook:
+    $$\frac{-\partial}{\partial \Sigma} = -\sum_{i=1}^{n}\sum_{k=1}^{c}y_{i,k}
+    \frac{\partial}{\partial \Sigma} \big[-(1/2)\ln(2\pi) -
+    (1/2)\ln(\det(\Sigma))-(1/2)(x-\mu)^{\trans}\Sigma^{-1} \big]
+    $$
+    $$=(1/2)\sum_{i=1}^{n}\sum_{k=1}^{c}y_{i,k}
+    \big[\Sigma^{-\trans}-\Sigma^{-\trans}(x-\mu)(x-\mu)^{\trans}\Sigma^{-\trans}
+    \big] $$
+
+\end{enumerate}
 
 
 
@@ -284,7 +389,7 @@ purchased and measured by Iain Murray:
 You may use anything in  \texttt{numpy} or \texttt{scipy}, except for \texttt{scipy.optimize}. That being said, if you happen to find a function in \texttt{numpy} or \texttt{scipy} that seems like it is doing too much for you, run it by a staff member on Piazza. In general, linear algebra and random variable functions are fine. The controller file is \texttt{problem3.py}, in which you will specify hyperparameters. The actual implementations you will write will be in \texttt{LogisticRegression.py} and \texttt{GaussianGenerativeModel.py}.
 
 
-You will be given class interfaces for \texttt{GaussianGenerativeModel} and \texttt{LogisticRegression} in the distribution code, 
+You will be given class interfaces for \texttt{GaussianGenerativeModel} and \texttt{LogisticRegression} in the distribution code,
 and the code will indicate certain lines that you should not change in your final submission. Naturally, don't change these.
 These classes will allow the final submissions to have consistency. There will also be a few hyperparameters that are set to
 irrelevant values at the moment. You may need to modify these to get your methods to work.
@@ -312,17 +417,61 @@ for a fruit of width 8.5cm and height 7cm.
 
 \end{problem}
 
+\subsection{Solution}
+Plots of Logistic Regression, Gaussian without shared covariance, and Gaussian
+with shared covariance.
+\includegraphics[scale=.5]{logistic_regression_result.png}
+\includegraphics[scale=.5]{generative_result_separate_covariances.png}
+\\
+\includegraphics[scale=.5]{generative_result_shared_covariances.png}
+
+My model for the Logistic Regression isn't quite correct; the point where the
+two lines meet should be right in the middle of the center cluster of points,
+to separate out the blue points from the red, however the generative Gaussian
+model seems pretty good. With the current data, the Gaussian without shared
+covariance seems quite good, however the area which it would predict apple is
+quite small, and doesn't leave much variation for potential apple shapes. It is
+biased by the small cluster of red data points compared to the varied blue data
+points. The Gaussian with shared covariance seems a bit better to predict more
+variety of apple sizes, though it clearly leaves many of the blue points in the
+top right of the graph outside the prediction area.
+
+For logistic regression, the separation lines have to be linear, which even
+with an accurate regression model would have limitations for this point. For
+Gaussian without shared covariance, since each class' variance is treated
+separately, this leads to prediction areas of varying sizes, since the variance
+per class is modeled separately. This is why the red prediction area is much
+smaller than the green and blue, and why the red area clearly has extended to
+cover the two outer points on the right side of the central cluster. The shared
+covariance graph is more evenly separated, since in the center the blue and red
+points are quite close together, which with a shared covariance means tight,
+separate prediction areas is not reasonable.
+
+My graph below for the loss over iterations is currently not correct, and I've
+not had the time to plot more $\eta$ or $\lambda$ values. The reason for this
+error, and overall error in my logistic regression model, is that I had been
+combining the overall loss per iteration correctly. It's obvious from this,
+then, that the loss jumps around too much, rather than monotonically
+increasing/decreasing towards the convergance point.
+\includegraphics[scale=.5]{loss_per_iter.png}
+
+For the fruits of size 4x11cm and 8.5x7cm In the same order as above:
+LR: lemon, orange
+GSeparate: lemon, apple
+GShared: orange, apple
+
 \newpage
 \subsection*{Calibration [1pt]}
 Approximately how long did this homework take you to complete?
+15-20 hours
 
 \subsection*{Name, Email, and Collaborators}
 
-Name:
+Name: David Hughes
 
-Email:
+Email: davidralphhughes@college.harvard.edu
 
-Collaborators:
+Collaborators: Alexander Muñoz
 
 
 \end{document}

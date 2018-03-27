@@ -5,14 +5,15 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from LogisticRegression import LogisticRegression
 from GaussianGenerativeModel import GaussianGenerativeModel
+import numpy as np
 
 
 ## These are the hyperparameters to the classifiers. You may need to
 # adjust these as you try to find the best fit for each classifier.
 
 # Logistic Regression parameters
-eta = .1
-lambda_parameter = .1
+eta = .001
+lambda_parameter = .05
 
 
 # Do not change anything below this line!!
